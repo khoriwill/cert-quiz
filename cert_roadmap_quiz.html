@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Your Certification Track — Free Roadmap Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0c1a;
+    --surface: #17142a;
+    --surface2: #1f1b35;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(138,116,255,0.5);
+    --accent: #8a74ff;
+    --accent-light: #b8abff;
+    --accent-bg: rgba(138,116,255,0.12);
+    --text: #f0eeff;
+    --muted: #9b94bf;
+    --success: #4dd98a;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(138,116,255,0.15) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 100%, rgba(77,217,138,0.08) 0%, transparent 50%);
+  }
+
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2.5rem 2rem;
+    animation: fadeUp .5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .brand-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .brand-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent-light);
+    letter-spacing: .04em;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 2.25rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+    width: 8%;
+  }
+
+  .step { display: none; animation: fadeUp .3s ease both; }
+  .step.active { display: block; }
+
+  .q-number {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+  .q-text {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 1.75rem;
+    line-height: 1.3;
+  }
+
+  .name-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    margin-bottom: 1.5rem;
+    transition: border-color .2s;
+  }
+  .name-input::placeholder { color: var(--muted); }
+  .name-input:focus { border-color: var(--accent); }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.75rem; }
+  .opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .15s, background .15s, color .15s;
+    line-height: 1.4;
+  }
+  .opt:hover { border-color: var(--border-hover); color: var(--text); background: rgba(138,116,255,0.06); }
+  .opt.selected { border-color: var(--accent); background: var(--accent-bg); color: var(--text); font-weight: 500; }
+
+  .nav { display: flex; justify-content: flex-end; gap: 10px; align-items: center; }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-primary:hover { opacity: .9; }
+  .btn-primary:active { transform: scale(.97); }
+  .btn-primary:disabled { opacity: .3; cursor: default; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 18px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+
+  .loading {
+    text-align: center;
+    padding: 3rem 0;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 1rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .load-msg { font-size: 14px; color: var(--muted); }
+
+  .result-track {
+    background: var(--accent-bg);
+    border: 1px solid rgba(138,116,255,0.25);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .track-label { font-size: 10px; font-weight: 600; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
+  .track-name { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: .4rem; }
+  .track-why { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .score-row { display: flex; gap: 10px; margin-bottom: 1.25rem; }
+  .score-card {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .875rem;
+    text-align: center;
+  }
+  .score-num { font-size: 22px; font-weight: 600; color: var(--text); }
+  .score-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .roadmap-title { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1rem; }
+  .step-item { display: flex; gap: 14px; margin-bottom: 1rem; align-items: flex-start; }
+  .step-dot {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  .divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+  .cta-box { text-align: center; padding-top: .5rem; }
+  .cta-title { font-family: var(--font-display); font-size: 18px; color: var(--text); margin-bottom: .3rem; }
+  .cta-sub { font-size: 13px; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; }
+  .btn-book {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn-book:hover { opacity: .9; }
+  .btn-book:active { transform: scale(.98); }
+  .btn-restart {
+    margin-top: 10px;
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .btn-restart:hover { border-color: var(--border-hover); color: var(--text); }
+
+  @media (max-width: 600px) {
+    .card { padding: 1.75rem 1.25rem 1.5rem; }
+    .q-text { font-size: 19px; }
+    .score-num { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <span class="brand-name">Certification Roadmap Quiz</span>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+
+  <div class="step active" id="s0">
+    <div class="q-number">Let's get started</div>
+    <div class="q-text">What's your name?</div>
+    <input class="name-input" id="nameInput" type="text" placeholder="Type your first name..." oninput="checkName()">
+    <div class="nav">
+      <button class="btn-primary" id="nameBtn" disabled onclick="goStep(1)">
+        Continue <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="step" id="s1">
+    <div class="q-number">Question 1 of 5</div>
+    <div class="q-text">Where are you right now in your tech journey?</div>
+    <div class="options">
+      <button class="opt" onclick="pick(this,1,'entry')">Just starting out — no certs yet</button>
+      <button class="opt" onclick="pick(this,1,'some')">Some IT experience, no formal certs</button>
+      <button class="opt" onclick="pick(this,1,'mid')">Have 1–2 certs and want to go deeper</button>
+      <button class="opt" onclick="pick(this,1,'senior')">Senior professional looking to specialize</button>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="goStep(0)">Back</button>
+      <button class="btn-primary" id="n1" disabled onclick="goStep(2)">Next <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div class="step" id="s2">
+    <div class="q-number">Question 2 of 5</div>
+    <div class="q-text">What excites you most about working in tech?</div>
+    <div class="options">
+      <button class="opt" onclick="pick(this,2,'build')">Building and managing infrastructure / cloud systems</button>
+      <button class="opt" onclick="pick(this,2,'secure')">Keeping systems safe and stopping threats</button>
+      <button class="opt" onclick="pick(this,2,'lead')">Leading projects and cross-functional teams</button>
+      <button class="opt" onclick="pick(this,2,'data')">Working with data, AI, and machine learning</button>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="goStep(1)">Back</button>
+      <button class="btn-primary" id="n2" disabled onclick="goStep(3)">Next <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div class="step" id="s3">
+    <div class="q-number">Question 3 of 5</div>
+    <div class="q-text">How much time can you dedicate to studying each week?</div>
+    <div class="options">
+      <button class="opt" onclick="pick(this,3,'low')">1–3 hours — busy but committed</button>
+      <button class="opt" onclick="pick(this,3,'med')">4–7 hours — steady progress works for me</button>
+      <button class="opt" onclick="pick(this,3,'high')">8–15 hours — I want to move fast</button>
+      <button class="opt" onclick="pick(this,3,'full')">Full-time — I'm all in</button>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="goStep(2)">Back</button>
+      <button class="btn-primary" id="n3" disabled onclick="goStep(4)">Next <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div class="step" id="s4">
+    <div class="q-number">Question 4 of 5</div>
+    <div class="q-text">What's your main goal after getting certified?</div>
+    <div class="options">
+      <button class="opt" onclick="pick(this,4,'job')">Land my first tech job or get promoted</button>
+      <button class="opt" onclick="pick(this,4,'raise')">Negotiate a higher salary</button>
+      <button class="opt" onclick="pick(this,4,'switch')">Transition into a completely new field</button>
+      <button class="opt" onclick="pick(this,4,'biz')">Grow my own business or consulting practice</button>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="goStep(3)">Back</button>
+      <button class="btn-primary" id="n4" disabled onclick="goStep(5)">Next <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div class="step" id="s5">
+    <div class="q-number">Question 5 of 5</div>
+    <div class="q-text">Which of these sounds most like you?</div>
+    <div class="options">
+      <button class="opt" onclick="pick(this,5,'hands')">I love hands-on labs and tinkering with systems</button>
+      <button class="opt" onclick="pick(this,5,'process')">I'm great at organizing people and processes</button>
+      <button class="opt" onclick="pick(this,5,'analytic')">I love patterns, numbers, and problem-solving</button>
+      <button class="opt" onclick="pick(this,5,'protect')">I think like an attacker to build better defenses</button>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="goStep(4)">Back</button>
+      <button class="btn-primary" id="n5" disabled onclick="generateResult()">Get my roadmap ✦</button>
+    </div>
+  </div>
+
+  <div class="step" id="sLoad">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="load-msg" id="loadMsg">Analyzing your answers...</div>
+    </div>
+  </div>
+
+  <div class="step" id="sResult">
+    <div id="resultContent"></div>
+  </div>
+</div>
+
+<script>
+const answers = {};
+const loadMsgs = ["Analyzing your answers...","Matching your profile to certification tracks...","Building your personalized roadmap..."];
+let msgIdx = 0, msgTimer;
+
+function checkName(){
+  document.getElementById('nameBtn').disabled = document.getElementById('nameInput').value.trim().length < 2;
+}
+
+function pick(el, step, val){
+  el.closest('.options').querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[step] = val;
+  document.getElementById('n'+step).disabled = false;
+}
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(n === 0 ? 's0' : 's'+n).classList.add('active');
+  document.getElementById('prog').style.width = Math.round((n / 6) * 100) + '%';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function generateResult(){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('sLoad').classList.add('active');
+  document.getElementById('prog').style.width = '90%';
+
+  msgIdx = 0;
+  document.getElementById('loadMsg').textContent = loadMsgs[0];
+  msgTimer = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadMsgs.length;
+    document.getElementById('loadMsg').textContent = loadMsgs[msgIdx];
+  }, 1600);
+
+  const name = document.getElementById('nameInput').value.trim();
+  const a = answers;
+
+  const prompt = `You are a tech certification advisor. Based on the following quiz answers, give a personalized certification roadmap.
+
+Name: ${name}
+Q1 (experience level): ${a[1]}
+Q2 (interest area): ${a[2]}
+Q3 (study time per week): ${a[3]}
+Q4 (main goal): ${a[4]}
+Q5 (personality): ${a[5]}
+
+Respond ONLY with a JSON object, no markdown, no backticks, no explanation. Use exactly this structure:
+{
+  "track": "short track name e.g. Cloud Infrastructure",
+  "first_cert": "specific cert name e.g. AWS Cloud Practitioner",
+  "why": "2 sentences max explaining why this track fits them personally based on their answers",
+  "readiness_score": 72,
+  "time_to_first_cert": "e.g. 3-4 months",
+  "steps": [
+    {"title": "short step title", "desc": "one sentence description"},
+    {"title": "short step title", "desc": "one sentence description"},
+    {"title": "short step title", "desc": "one sentence description"},
+    {"title": "short step title", "desc": "one sentence description"}
+  ]
+}`;
+
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      messages: [{ role: "user", content: prompt }]
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    clearInterval(msgTimer);
+    const text = data.content.map(i => i.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    showResult(name, JSON.parse(clean));
+  })
+  .catch(() => {
+    clearInterval(msgTimer);
+    showResult(name, {
+      track: "Cloud Infrastructure",
+      first_cert: "AWS Cloud Practitioner",
+      why: "Your hands-on mindset and infrastructure interest make cloud your fastest path to a meaningful career move. AWS is the most in-demand platform globally right now.",
+      readiness_score: 74,
+      time_to_first_cert: "3–4 months",
+      steps: [
+        { title: "Assess your baseline", desc: "Take a free AWS practice quiz to identify exactly where to focus." },
+        { title: "Study 4–6 weeks", desc: "Use free AWS Skill Builder and Stephane Maarek's course on Udemy." },
+        { title: "Book your exam", desc: "Schedule the AWS Cloud Practitioner exam (CLF-C02) online for ~$100." },
+        { title: "Plan your next cert", desc: "After passing, map to Solutions Architect Associate for a major pay jump." }
+      ]
+    });
+  });
+}
+
+function showResult(name, r){
+  clearInterval(msgTimer);
+  document.getElementById('prog').style.width = '100%';
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('sResult').classList.add('active');
+
+  const steps = r.steps.map((s, i) => `
+    <div class="step-item">
+      <div class="step-dot">${i + 1}</div>
+      <div><div class="step-title">${s.title}</div><div class="step-desc">${s.desc}</div></div>
+    </div>`).join('');
+
+  const certShort = r.first_cert.split(' ').slice(0, 3).join(' ');
+
+  document.getElementById('resultContent').innerHTML = `
+    <div class="result-track">
+      <div class="track-label">Your recommended track</div>
+      <div class="track-name">${r.track}</div>
+      <div class="track-why">${r.why}</div>
+    </div>
+    <div class="score-row">
+      <div class="score-card">
+        <div class="score-num">${Math.round(r.readiness_score)}%</div>
+        <div class="score-lbl">Readiness score</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" style="font-size:15px;line-height:1.3">${certShort}</div>
+        <div class="score-lbl">First cert to target</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" style="font-size:16px">${r.time_to_first_cert}</div>
+        <div class="score-lbl">Estimated timeline</div>
+      </div>
+    </div>
+    <div class="roadmap-title">Your personalized roadmap</div>
+    ${steps}
+    <div class="divider"></div>
+    <div class="cta-box">
+      <div class="cta-title">Ready to start, ${name}?</div>
+      <div class="cta-sub">Book a free 20-min clarity call and get your full study plan, resources, and a personal guide.</div>
+      <button class="btn-book" onclick="window.open('https://calendly.com','_blank')">Book your free clarity call →</button>
+      <button class="btn-restart" onclick="location.reload()">Retake the quiz</button>
+    </div>`;
+}
+</script>
+</body>
+</html>
